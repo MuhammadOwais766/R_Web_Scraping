@@ -1,0 +1,82 @@
+---
+title: "Web Scraping ISO 3166 Country Codes"
+author: "Owais"
+date: "2025-03-21"
+output: html_document
+---
+# Web Scraping ISO 3166 Country Codes
+
+This document demonstrates how to scrape a table of ISO 3166 country codes from Wikipedia using R. The table is extracted, cleaned, and saved as a CSV file.
+
+## Setup
+
+First, ensure that the necessary R packages are installed and loaded. These packages include `dplyr`, `rvest`, `httr`, `jsonlite`, and `RSelenium`.
+
+```{r warning=FALSE}
+# Install required packages (if not already installed)
+# install.packages("dplyr")
+# install.packages("rvest")
+# install.packages("httr")
+# install.packages("jsonlite")
+# install.packages("RSelenium")
+
+# Load the required libraries
+library(dplyr)      # For data manipulation
+library(rvest)      # For web scraping
+library(httr)       # For handling HTTP requests
+library(jsonlite)   # For working with JSON data
+library(RSelenium)  # For browser automation (if needed)
+```
+
+## Scraping the Data
+
+The target webpage is the Wikipedia page containing the list of ISO 3166 country codes. The table is extracted using the `rvest` package.
+
+```{r warning=FALSE}
+# Define the URL of the Wikipedia page
+link <- "https://en.wikipedia.org/wiki/list_of_ISO_3166_country_codes"
+
+# Read the HTML content of the page
+page <- read_html(link)
+
+# Extract the sortable table from the page
+element <- page %>% html_element("table.sortable")
+
+# Convert the HTML table into a data frame
+df <- html_table(element, header = FALSE)
+
+# Display the first few rows of the raw data
+head(df)
+```
+
+## Cleaning the Data
+
+The extracted table contains unnecessary rows and headers. We clean the data by removing the first two rows and setting the column names.
+
+```{r warning=FALSE}
+# Set the column names using the second row of the data frame
+names(df) <- df[2, ]
+
+# Remove the first two rows (header and subheader)
+df <- df[-1:-2, ]
+
+# Display the cleaned data frame
+head(df)
+```
+
+## Saving the Data
+
+Finally, the cleaned data is saved as a CSV file for future use.
+
+```{r warning=FALSE}
+# Save the cleaned data frame as a CSV file
+write.csv(df, "iso_codes.csv", row.names = FALSE)
+
+# Confirm that the file has been saved
+cat("The data has been saved as 'iso_codes.csv'.")
+```
+
+## Conclusion
+
+This document demonstrates how to scrape, clean, and save a table of ISO 3166 country codes from Wikipedia using R. The resulting CSV file can be used for further analysis or integration into other projects.
+
